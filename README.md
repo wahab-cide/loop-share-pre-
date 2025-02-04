@@ -158,3 +158,23 @@ Loop is a full-stack React Native ride-sharing application designed to provide u
 - Instant rider information
 - Acceptance/Decline ride options
 - Push notification integration
+
+
+
+
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_dG9wLWpvZXktOTkuY2xlcmsuYWNjb3VudHMuZGV2JA
+CLERK_SECRET_KEY=sk_test_nJo2MuIH9XyHc6bhlqCbNuatxH2HksN8kGzPsPBr0P
+
+EXPO_PUBLIC_PLACES_API_KEY=      / 2:59:06
+EXPO_PUBLIC_DIRECTIONS_API_KEY=
+
+DATABASE_URL=postgresql://neondb_owner:npg_CLP7baM9Uhrm@ep-broad-sea-a48woyzc-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+EXPO_PUBLIC_SERVER_URL=https://uber.dev/
+
+EXPO_PUBLIC_GEOAPIFY_API_KEY=4469b593c5cc4ec0b9ec455985ed864a
+
+EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+
+
