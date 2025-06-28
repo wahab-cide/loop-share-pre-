@@ -23,7 +23,7 @@
 
 ## Project Vision
 
-Loop merges the discovery mechanics of social media with the utility of ride sharing. **Anyone can post a ride** (origin → destination, time, seats, price) and **anyone nearby can book it**. Comments are replaced with **driver reviews**, encouraging transparency and community trust.
+Loop merges the discovery mechanics of social media with the utility of ride sharing. **Anyone can post a ride** (origin → destination, date, time, seats, price) and **anyone nearby can book it**. Comments are replaced with **driver reviews**, encouraging transparency and community trust.
 
 ---
 
