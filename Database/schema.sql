@@ -50,20 +50,81 @@ CREATE INDEX vehicles_driver_idx ON vehicles (driver_id);
 -- ===========================================================
 --  TRIPS  (future rides posted by drivers)
 -- ===========================================================
-CREATE TABLE trips (
-  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  driver_id       uuid NOT NULL REFERENCES profiles(id),
-  vehicle_id      uuid NOT NULL REFERENCES vehicles(id),
-  departure_geo   geography(Point,4326),
-  arrival_geo     geography(Point,4326),
-  departure_at    timestamptz,
-  price_per_seat  numeric(10,2),
-  seats_total     int,
-  seats_taken     int DEFAULT 0,
-  status          trip_status DEFAULT 'open',
-  notes           text,
-  created_at      timestamptz DEFAULT now()
+BEGIN;
+
+/* -----------------------------------------------------------
+   1. ENUM: status of a ride
+----------------------------------------------------------- */
+CREATE TYPE ride_status AS ENUM ('open', 'full', 'completed', 'cancelled');
+
+/* -----------------------------------------------------------
+   2. RIDES (one row per posted trip)
+----------------------------------------------------------- */
+CREATE TABLE rides (
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  -- FK to the driver (must already be a user)
+  driver_id        UUID NOT NULL
+                       REFERENCES users(id)
+                       ON DELETE CASCADE,
+
+  /* ORIGIN & DESTINATION
+     - store both human-readable text and geo coords for maps / queries */
+  origin_label     TEXT         NOT NULL,   -- “Campus Main Gate”
+  origin_lat       NUMERIC(10,6) NOT NULL,  -- 6-dec places ≈ 0.11 m
+  origin_lng       NUMERIC(10,6) NOT NULL,
+
+  destination_label TEXT         NOT NULL,  -- “Accra, Circle”
+  destination_lat   NUMERIC(10,6) NOT NULL,
+  destination_lng   NUMERIC(10,6) NOT NULL,
+
+  /* TIMING */
+  departure_time   TIMESTAMPTZ   NOT NULL,
+  arrival_time     TIMESTAMPTZ,              -- optional / ETA
+
+  /* CAPACITY */
+  seats_total      SMALLINT      NOT NULL CHECK (seats_total > 0),
+  seats_available  SMALLINT      NOT NULL
+                                 CHECK (seats_available >= 0
+                                    AND seats_available <= seats_total),
+
+  /* PRICING */
+  price            NUMERIC(8,2)  NOT NULL,   -- total price per seat
+  currency         CHAR(3)       NOT NULL DEFAULT 'USD',
+
+  /* STATE */
+  status           ride_status   NOT NULL DEFAULT 'open',
+
+  /* AUDIT */
+  created_at       TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at       TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
+
+/* -----------------------------------------------------------
+   3. Keep updated_at fresh
+----------------------------------------------------------- */
+CREATE OR REPLACE FUNCTION trg_set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_at_rides
+BEFORE UPDATE ON rides
+FOR EACH ROW
+EXECUTE PROCEDURE trg_set_updated_at();
+
+/* -----------------------------------------------------------
+   4. Helpful indexes
+----------------------------------------------------------- */
+CREATE INDEX rides_driver_idx     ON rides(driver_id);
+CREATE INDEX rides_depart_idx     ON rides(departure_time);
+CREATE INDEX rides_status_idx     ON rides(status);
+
+COMMIT;
+
 
 -- feed/sort index
 CREATE INDEX trips_feed_idx ON trips (status, departure_at DESC);
