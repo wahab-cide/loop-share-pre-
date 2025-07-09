@@ -9,7 +9,7 @@ CREATE TYPE payment_status  AS ENUM ('requires_payment','succeeded','failed','re
 -- ===========================================================
 --  PROFILES  (1-to-1 with auth.users)
 -- ===========================================================
-CREATE TABLE profiles (
+CREATE TABLE users (
   id             uuid PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
   full_name      text,
   avatar_url     text,
@@ -23,7 +23,7 @@ CREATE TABLE profiles (
 --  DRIVER PROFILE  (docs & verification)
 -- ===========================================================
 CREATE TABLE driver_profile (
-  id                uuid PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
+  id                uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   license_front_url text,
   license_back_url  text,
   insurance_doc_url text,
