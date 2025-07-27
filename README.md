@@ -314,8 +314,6 @@ Workflows are under `.github/workflows/`.
 
 
 
-See [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) before contributing.
-
 ---
 
 **Happy Looping!** 🎉
